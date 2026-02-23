@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PokéVault Business++</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>PokéVault Business++</h1>
+</header>
+
+<main>
+  <section id="collection-section">
+    <h2>📦 Ma collection</h2>
+    <div id="coll-grid"></div>
+    <button onclick="exportJSON()">⬇️ Export JSON</button>
+    <input type="file" id="import-file" onchange="importJSON(event)">
+  </section>
+
+  <section id="search-section">
+    <h2>🔍 Rechercher une carte</h2>
+    <input id="search-input" placeholder="Ex: Pikachu VMAX">
+    <button onclick="doSearch()">Rechercher</button>
+    <div id="search-results"></div>
+  </section>
+
+  <section id="alerts-section">
+    <h2>⚡ Alertes</h2>
+    <input type="number" id="alert-price" placeholder="Prix seuil €">
+    <button onclick="setAlert()">Définir alerte</button>
+    <ul id="alerts-list"></ul>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
