@@ -4,33 +4,363 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PokéVault</title>
-
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="style.css">
-<link rel="icon" href="icon.svg">
+<meta name="theme-color" content="#ffcb05">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PokéVault">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0f1a;--s:#161929;--s2:#1e2236;--b:#2a2f4a;--a:#ffcb05;--a2:#3b4cca;--r:#e53935;--t:#e8eaf6;--t2:#8892b0;--g:#4ecca3;--rad:14px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--t);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(59,76,202,.12) 0%,transparent 70%);pointer-events:none;z-index:0}
 
+/* HEADER */
+header{position:sticky;top:0;z-index:200;background:rgba(13,15,26,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--b);padding:0 16px;display:flex;align-items:center;gap:10px;height:56px}
+.pokeball{width:30px;height:30px;flex-shrink:0;background:conic-gradient(var(--r) 180deg,#fff 180deg);border-radius:50%;border:3px solid #fff;position:relative}
+.pokeball::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:8px;height:8px;background:#fff;border-radius:50%;border:2px solid #444}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:2px;background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.nb{background:none;border:none;color:var(--t2);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.78rem;padding:6px 10px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.nb:hover,.nb.active{background:var(--s2);color:var(--a)}
+
+/* LAYOUT */
+main{position:relative;z-index:1;padding:20px 16px;max-width:1300px;margin:0 auto}
+.view{display:none}
+.view.active{display:block;animation:fu .25s ease}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* SECTION TITLE */
+.st{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.st::after{content:'';flex:1;height:1px;background:var(--b)}
+
+/* STAT CARDS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:24px}
+.sc{background:var(--s);border:1px solid var(--b);border-radius:var(--rad);padding:16px;position:relative;overflow:hidden;transition:transform .2s}
+.sc:hover{transform:translateY(-2px)}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--a),var(--a2))}
+.sl{font-size:.7rem;color:var(--t2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--a);line-height:1}
+.ss{font-size:.75rem;color:var(--t2);margin-top:4px}
+
+/* CHARTS */
+.cs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(max-width:640px){.cs{grid-template-columns:1fr}}
+.cb{background:var(--s);border:1px solid var(--b);border-radius:var(--rad);padding:16px}
+.ct{font-weight:800;margin-bottom:12px;font-size:.8rem;color:var(--t2);text-transform:uppercase;letter-spacing:1px}
+
+/* SEARCH */
+.sbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.sinp{flex:1;min-width:180px;background:var(--s);border:1px solid var(--b);color:var(--t);font-family:'Nunito',sans-serif;font-size:.92rem;padding:10px 14px;border-radius:10px;outline:none;transition:border-color .2s}
+.sinp:focus{border-color:var(--a)}
+.sinp::placeholder{color:var(--t2)}
+
+/* BUTTONS */
+.btn{background:linear-gradient(135deg,var(--a),#e09800);color:#0d0f1a;font-family:'Nunito',sans-serif;font-weight:800;font-size:.85rem;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap;display:inline-block}
+.btn:hover{opacity:.88}
+.btn:active{transform:scale(.97)}
+.btn2{background:var(--s2);color:var(--t);border:1px solid var(--b)}
+
+/* RESULTS */
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.rc{background:var(--s);border:1px solid var(--b);border-radius:var(--rad);overflow:hidden;transition:transform .2s,border-color .2s;position:relative}
+.rc:hover{transform:translateY(-4px);border-color:var(--a)}
+.rc img{width:100%;display:block}
+.rph{height:105px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:2.2rem}
+.rb{padding:9px}
+.rn{font-weight:700;font-size:.8rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rset{font-size:.68rem;color:var(--t2);margin-bottom:6px}
+.pr{display:flex;justify-content:space-between;align-items:center;font-size:.7rem;margin-bottom:2px}
+.pl{color:var(--t2)}
+.pa{color:var(--g);font-weight:800;font-size:.88rem}
+.plo{color:var(--t2);font-weight:700}
+.ptr{color:var(--a);font-weight:700}
+.addb{position:absolute;top:7px;right:7px;background:var(--a);color:#0d0f1a;border:none;width:26px;height:26px;border-radius:50%;font-size:1.1rem;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;line-height:1}
+.rc:hover .addb{opacity:1}
+
+/* COLLECTION */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px}
+.cc{background:var(--s);border:1px solid var(--b);border-radius:var(--rad);overflow:hidden;transition:transform .2s,box-shadow .2s;position:relative;cursor:pointer}
+.cc:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(255,203,5,.1)}
+.cc img{width:100%;display:block}
+.cph{height:105px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:2.2rem}
+.cbd{padding:9px}
+.cn{font-weight:700;font-size:.78rem;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cset{font-size:.66rem;color:var(--t2);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cu{font-size:.76rem;color:var(--g);font-weight:800}
+.ctot{font-size:.7rem;color:var(--a);font-weight:700}
+.bq{position:absolute;top:6px;left:6px;background:var(--a2);color:#fff;border-radius:5px;padding:2px 6px;font-size:.68rem;font-weight:800}
+.bdel{position:absolute;top:6px;right:6px;background:var(--r);color:#fff;border:none;border-radius:50%;width:21px;height:21px;font-size:.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.cc:hover .bdel{opacity:1}
+
+/* RARITY */
+.rar{display:inline-block;padding:2px 6px;border-radius:4px;font-size:.65rem;font-weight:700;margin-top:4px}
+.rc0{background:#333;color:#aaa}
+.rc1{background:#1a4a2e;color:var(--g)}
+.rc2{background:#162050;color:#7ab4f8}
+.rc3{background:#38104e;color:#d084fc}
+.rc4{background:#4a2a06;color:var(--a)}
+
+/* FILTER */
+.fb{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.fbt{background:var(--s);border:1px solid var(--b);color:var(--t2);font-family:'Nunito',sans-serif;font-weight:700;font-size:.72rem;padding:4px 11px;border-radius:18px;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.4px}
+.fbt.active,.fbt:hover{background:var(--a);color:#0d0f1a;border-color:var(--a)}
+
+/* SYNC BAR */
+.synbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.synh{font-size:.76rem;color:var(--t2)}
+
+/* MANUAL FORM */
+.mf{background:var(--s);border:1px solid var(--b);border-radius:var(--rad);padding:22px;max-width:460px}
+.mft{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--a);margin-bottom:18px;letter-spacing:1px}
+.fg{margin-bottom:12px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:.72rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+input[type=text],input[type=number],input[type=url],select{width:100%;background:var(--s2);border:1px solid var(--b);color:var(--t);font-family:'Nunito',sans-serif;font-size:.9rem;padding:8px 12px;border-radius:8px;outline:none;transition:border-color .2s}
+input:focus,select:focus{border-color:var(--a)}
+select option{background:var(--s2)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px)}
+.mb{background:var(--s);border:1px solid var(--b);border-radius:18px;max-width:400px;width:100%;overflow:hidden;animation:fu .2s ease}
+.mh{background:linear-gradient(135deg,var(--a2),#0d0f1a);padding:18px;display:flex;gap:14px;align-items:flex-start}
+.mh img{width:85px;border-radius:9px;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.mhp{width:85px;height:118px;background:var(--s2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:2.8rem;flex-shrink:0}
+.mn{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--a);letter-spacing:1px;line-height:1;margin-bottom:4px}
+.ms{color:var(--t2);font-size:.76rem;margin-bottom:7px}
+.mbody{padding:18px}
+.mp{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.mpb{background:var(--s2);border-radius:9px;padding:11px;text-align:center}
+.mpl{font-size:.66rem;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.mpv{font-family:'Bebas Neue',sans-serif;font-size:1.6rem}
+.mer{display:flex;gap:7px;align-items:center;margin-bottom:14px}
+.mer label{margin:0;white-space:nowrap}
+.ma{display:flex;gap:7px}
+
+/* MISC */
+.ld{text-align:center;padding:44px 20px;color:var(--t2)}
+.sp{display:inline-block;width:28px;height:28px;border:3px solid var(--b);border-top-color:var(--a);border-radius:50%;animation:spin .75s linear infinite;margin-bottom:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.em{text-align:center;padding:50px 20px;color:var(--t2)}
+.ei{font-size:2.8rem;margin-bottom:9px}
+.toast{position:fixed;bottom:18px;right:18px;z-index:2000;background:var(--s2);border:1px solid var(--g);color:var(--g);padding:10px 16px;border-radius:9px;font-weight:700;font-size:.85rem;pointer-events:none;animation:ti .25s ease,to .3s ease 2.2s forwards}
+.toast.warn{border-color:var(--r);color:var(--r)}
+@keyframes ti{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes to{to{opacity:0;transform:translateY(14px)}}
+</style>
 </head>
 <body>
 
 <header>
-    <h1>PokéVault</h1>
-    <nav>
-        <button onclick="showPage('dashboard')">Dashboard</button>
-        <button onclick="showPage('search')">Recherche</button>
-        <button onclick="showPage('collection')">Collection</button>
-        <button onclick="showPage('add')">Ajouter</button>
-    </nav>
+  <div class="pokeball"></div>
+  <div class="logo">PokéVault</div>
+  <nav>
+    <button class="nb active" id="nav-dashboard" onclick="showView('dashboard')">📊 Dashboard</button>
+    <button class="nb" id="nav-search"    onclick="showView('search')">🔍 Rechercher</button>
+    <button class="nb" id="nav-collection" onclick="showView('collection')">📦 Collection</button>
+    <button class="nb" id="nav-manual"   onclick="showView('manual')">✏️ Ajouter</button>
+  </nav>
 </header>
 
-<main id="content"></main>
+<main>
 
-<script src="script.js"></script>
+  <div id="view-dashboard" class="view active">
+    <div class="sg" id="stats-grid"></div>
+    <div class="cs">
+      <div class="cb"><div class="ct">📈 Valeur par extension</div><canvas id="chart-sets" height="220"></canvas></div>
+      <div class="cb"><div class="ct">💎 Répartition par rareté</div><canvas id="chart-rarity" height="220"></canvas></div>
+    </div>
+    <div class="st">⭐ Top cartes précieuses</div>
+    <div class="cg" id="top-cards"></div>
+  </div>
 
+  <div id="view-search" class="view">
+    <div class="st">🔍 Rechercher une carte Pokémon</div>
+    <div class="sbar">
+      <input id="sinp" class="sinp" placeholder="Ex : Dracaufeu, Pikachu VMAX, Mew..." onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="btn" onclick="doSearch()">Rechercher</button>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <div id="view-collection" class="view">
+    <div class="st">📦 Ma Collection</div>
+    <div class="synbar">
+      <button class="btn" onclick="exportJSON()">⬇️ Exporter</button>
+      <label class="btn btn2" style="cursor:pointer">⬆️ Importer<input type="file" id="imp" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+      <span class="synh">Sauvegardez ou transférez sur un autre appareil</span>
+    </div>
+    <div class="fb" id="filter-bar"></div>
+    <div class="cg" id="coll-grid"></div>
+  </div>
+
+  <div id="view-manual" class="view">
+    <div class="st">✏️ Ajouter manuellement</div>
+    <div class="mf">
+      <div class="mft">Nouvelle carte</div>
+      <div class="fg"><label>Nom *</label><input type="text" id="f-name" placeholder="Ex : Dracaufeu ex"></div>
+      <div class="fg"><label>Extension / Set</label><input type="text" id="f-set" placeholder="Ex : Écarlate et Violet"></div>
+      <div class="fr">
+        <div class="fg"><label>Rareté</label>
+          <select id="f-rarity">
+            <option value="0">Commune</option>
+            <option value="1">Peu commune</option>
+            <option value="2">Rare</option>
+            <option value="3" selected>Ultra Rare</option>
+            <option value="4">Secrète</option>
+          </select>
+        </div>
+        <div class="fg"><label>Quantité</label><input type="number" id="f-qty" min="1" value="1"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Cote (€)</label><input type="number" id="f-value" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><label>Condition</label>
+          <select id="f-cond">
+            <option>Mint</option><option selected>Near Mint</option>
+            <option>Excellent</option><option>Bon état</option><option>Abîmée</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label>Image URL (optionnel)</label><input type="url" id="f-img" placeholder="https://..."></div>
+      <button class="btn" style="width:100%;margin-top:6px" onclick="addManual()">➕ Ajouter à la collection</button>
+    </div>
+  </div>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script>
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-}
-</script>
+// ═══════════════════════════════════════════════
+// CONSTANTES
+// ═══════════════════════════════════════════════
+var KEY = 'pokevault_v5';
+var RLBL = ['Commune','Peu commune','Rare','Ultra Rare','Secrète'];
+var RCLS = ['rc0','rc1','rc2','rc3','rc4'];
+var collection = [];
+var filter = 'Tous';
+var CH = {};
 
-</body>
-</html>
+// ═══════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(collection)); } catch(e) {}
+}
+function load() {
+  try { var r = localStorage.getItem(KEY); collection = r ? JSON.parse(r) : []; } catch(e) { collection = []; }
+}
+
+// ═══════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════
+function showView(id) {
+  // Cacher toutes les vues
+  var views = document.querySelectorAll('.view');
+  for (var i = 0; i < views.length; i++) views[i].classList.remove('active');
+  // Désactiver tous les boutons nav
+  var btns = document.querySelectorAll('.nb');
+  for (var j = 0; j < btns.length; j++) btns[j].classList.remove('active');
+  // Activer la vue cible
+  document.getElementById('view-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  // Rendre si nécessaire
+  if (id === 'dashboard')  renderDash();
+  if (id === 'collection') renderColl();
+}
+
+// ═══════════════════════════════════════════════
+// API POKEMON TCG
+// ═══════════════════════════════════════════════
+function doSearch() {
+  var q = document.getElementById('sinp').value.trim();
+  if (!q) return;
+  var el = document.getElementById('results');
+  el.innerHTML = '<div class="ld"><div class="sp"></div><div>Recherche en cours…</div></div>';
+  var url = 'https://api.pokemontcg.io/v2/cards?q=name:' + encodeURIComponent(q) + '&pageSize=24&orderBy=-set.releaseDate';
+  fetch(url)
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(json) { renderResults(json.data || []); })
+    .catch(function(e) {
+      el.innerHTML = '<div class="em"><div class="ei">⚠️</div><p>Impossible de joindre l\'API Pokémon TCG.<br>Vérifiez votre connexion ou utilisez la <strong>saisie manuelle</strong>.</p><p style="margin-top:8px;font-size:.76rem;color:var(--t2)">' + esc(e.message) + '</p></div>';
+    });
+}
+
+function renderResults(cards) {
+  var el = document.getElementById('results');
+  if (!cards.length) { el.innerHTML = '<div class="em"><div class="ei">🃏</div><p>Aucune carte trouvée.</p></div>'; return; }
+  var html = '<div class="rg">';
+  for (var i = 0; i < cards.length; i++) {
+    var c = cards[i];
+    var cm  = c.cardmarket && c.cardmarket.prices;
+    var tcp = c.tcgplayer  && c.tcgplayer.prices;
+    var avg   = (cm && cm.averageSellPrice) || (tcp && tcp.holofoil && tcp.holofoil.market) || (tcp && tcp.normal && tcp.normal.market) || 0;
+    var low   = (cm && cm.lowPrice) || (tcp && tcp.holofoil && tcp.holofoil.low) || (tcp && tcp.normal && tcp.normal.low) || 0;
+    var trend = (cm && cm.trendPrice) || 0;
+    var img   = (c.images && c.images.small) || '';
+    var idx   = window._pendingCards ? window._pendingCards.length : 0;
+    if (!window._pendingCards) window._pendingCards = [];
+    window._pendingCards.push({card: c, price: avg});
+    html += '<div class="rc">';
+    html += img ? '<img src="' + esc(img) + '" alt="' + esc(c.name) + '" loading="lazy">' : '<div class="rph">🃏</div>';
+    html += '<button class="addb" onclick="addPending(' + idx + ')">+</button>';
+    html += '<div class="rb">';
+    html += '<div class="rn">' + esc(c.name) + '</div>';
+    html += '<div class="rset">' + esc((c.set && c.set.name) || '') + ' · ' + esc(c.rarity || '') + '</div>';
+    html += '<div class="pr"><span class="pl">💶 Cote</span><span class="pa">' + (avg ? avg.toFixed(2) + ' €' : '—') + '</span></div>';
+    if (low)   html += '<div class="pr"><span class="pl">📉 Min</span><span class="plo">' + low.toFixed(2) + ' €</span></div>';
+    if (trend) html += '<div class="pr"><span class="pl">📈 Tendance</span><span class="ptr">' + trend.toFixed(2) + ' €</span></div>';
+    html += '</div></div>';
+  }
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+// Stocker les cartes en attente pour éviter les problèmes d'encoding dans onclick
+window._pendingCards = [];
+
+function addPending(idx) {
+  var item = window._pendingCards[idx];
+  if (!item) return;
+  var c = item.card;
+  var rk = mapRarity(c.rarity || '');
+  pushCard({
+    name: c.name,
+    set: (c.set && c.set.name) || 'Inconnu',
+    rarity: rk,
+    rarityLabel: RLBL[rk],
+    qty: 1,
+    value: item.price || 0,
+    condition: 'Near Mint',
+    img: (c.images && c.images.small) || ''
+  });
+}
+
+// ═══════════════════════════════════════════════
+// AJOUTER / SUPPRIMER / MODIFIER
+// ═══════════════════════════════════════════════
+function addManual() {
+  var name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('⚠️ Le nom est obligatoire', true); return; }
+  var ri = parseInt(document.getElementById('f-rarity').value);
+  pushCard({
+    name: name,
+    set: document.getElementById('f-set').value.trim() || 'Inconnu',
+    rarity: ri,
+    rarityLabel: RLBL[ri],
+    qty: Math.max(1, parseInt(document.getElementById('f-qty').value) || 1),
+    value: parseFloat(document.getElementById('f-value').value) || 0,
+    condition: document.getElementById('f-cond').value,
+    img: document.getElementById('f-img').value.trim()
+  });
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-set').value  = '';
+  document.getElementById('f-img').value  = '';
+  document.getElementById('f-qty').value  = '1';
+  document.getElementById('f-value').value = '';
+}
+
+function pus
