@@ -1,35 +1,31 @@
 body {
-background:#0d0f1a;
-color:#e8eaf6;
-font-family:Nunito,sans-serif;
-margin:0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #0b132b;
+    color: white;
 }
 
 header {
-background:#161929;
-padding:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+    background: #1c2541;
+    padding: 15px;
+    text-align: center;
 }
 
-.nav-btn {
-margin-left:5px;
-padding:6px 10px;
-cursor:pointer;
+nav button {
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
 }
 
-.view { display:none; padding:20px; }
-.view.active { display:block; }
-
-.coll-grid {
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
-gap:10px;
+main {
+    padding: 20px;
 }
 
 .card {
-background:#1e2236;
-padding:10px;
-border-radius:10px;
+    background: #3a506b;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
 }
