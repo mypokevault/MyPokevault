@@ -1,41 +1,79 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PokéVault Business++</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokéVault — Ma Collection</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PokéVault">
+  <meta name="theme-color" content="#ffcb05">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
 <header>
-  <h1>PokéVault Business++</h1>
+  <div class="pokeball"></div>
+  <div class="logo">PokéVault</div>
+  <nav>
+    <button class="nav-btn active" onclick="showView('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-btn"        onclick="showView('search',this)">🔍 Rechercher</button>
+    <button class="nav-btn"        onclick="showView('collection',this)">📦 Collection</button>
+    <button class="nav-btn"        onclick="showView('manual',this)">✏️ Ajouter</button>
+  </nav>
 </header>
-
 <main>
-  <section id="collection-section">
-    <h2>📦 Ma collection</h2>
-    <div id="coll-grid"></div>
-    <button onclick="exportJSON()">⬇️ Export JSON</button>
-    <input type="file" id="import-file" onchange="importJSON(event)">
-  </section>
-
-  <section id="search-section">
-    <h2>🔍 Rechercher une carte</h2>
-    <input id="search-input" placeholder="Ex: Pikachu VMAX">
-    <button onclick="doSearch()">Rechercher</button>
+  <div id="view-dashboard" class="view active">
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="chart-section">
+      <div class="chart-box"><div class="chart-title">📈 Valeur par extension</div><canvas id="chart-sets" height="220"></canvas></div>
+      <div class="chart-box"><div class="chart-title">💎 Répartition par rareté</div><canvas id="chart-rarity" height="220"></canvas></div>
+    </div>
+    <div class="section-title">⭐ Top cartes les plus précieuses</div>
+    <div class="coll-grid" id="top-cards"></div>
+  </div>
+  <div id="view-search" class="view">
+    <div class="section-title">🔍 Rechercher une carte Pokémon</div>
+    <div class="search-bar">
+      <input id="search-input" class="search-input" placeholder="Ex : Dracaufeu, Pikachu VMAX..." onkeydown="if(event.key==='Enter') doSearch()">
+      <button class="btn" onclick="doSearch()">Rechercher</button>
+    </div>
     <div id="search-results"></div>
-  </section>
-
-  <section id="alerts-section">
-    <h2>⚡ Alertes</h2>
-    <input type="number" id="alert-price" placeholder="Prix seuil €">
-    <button onclick="setAlert()">Définir alerte</button>
-    <ul id="alerts-list"></ul>
-  </section>
+  </div>
+  <div id="view-collection" class="view">
+    <div class="section-title">📦 Ma Collection</div>
+    <div class="sync-bar">
+      <button class="btn" onclick="exportJSON()">⬇️ Exporter</button>
+      <label class="btn btn-secondary" style="cursor:pointer">⬆️ Importer<input type="file" id="import-file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+      <span class="sync-hint">Exportez pour transférer sur un autre appareil</span>
+    </div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div class="coll-grid" id="coll-grid"></div>
+  </div>
+  <div id="view-manual" class="view">
+    <div class="section-title">✏️ Ajouter une carte manuellement</div>
+    <div class="manual-form">
+      <div class="form-title">Nouvelle carte</div>
+      <div class="form-group"><label>Nom de la carte *</label><input type="text" id="f-name" placeholder="Ex : Dracaufeu ex"></div>
+      <div class="form-group"><label>Extension / Set</label><input type="text" id="f-set" placeholder="Ex : Écarlate et Violet"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Rareté</label><select id="f-rarity"><option value="common">Commune</option><option value="uncommon">Peu commune</option><option value="rare">Rare</option><option value="ultrarare" selected>Ultra Rare</option><option value="secret">Secrète</option></select></div>
+        <div class="form-group"><label>Quantité</label><input type="number" id="f-qty" min="1" value="1"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Cote estimée (€)</label><input type="number" id="f-value" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="form-group"><label>Condition</label><select id="f-condition"><option>Mint</option><option selected>Near Mint</option><option>Excellent</option><option>Bon état</option><option>Abîmée</option></select></div>
+      </div>
+      <div class="form-group"><label>Image URL (optionnel)</label><input type="url" id="f-img" placeholder="https://..."></div>
+      <button class="btn" style="width:100%;margin-top:4px" onclick="addManualCard()">➕ Ajouter à la collection</button>
+    </div>
+  </div>
 </main>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="script.js"></script>
 </body>
-</html>
+  </html>
+      
