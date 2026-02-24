@@ -3,88 +3,125 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PokéVault</title>
+<title>PokéVault PRO</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ffcb05">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="PokéVault">
+<meta name="apple-mobile-web-app-title" content="PokéVault PRO">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<style>
-/* LANG BAR */
-.lang-bar{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.lang-label{font-size:.78rem;color:var(--t2);font-weight:700}
-.lang-btn{background:var(--s2);border:1px solid var(--b);color:var(--t2);font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .15s}
-.lang-btn:hover,.lang-btn.active{background:var(--a);color:#0d0f1a;border-color:var(--a)}
-.lang-info{font-size:.75rem;color:var(--t2);margin-bottom:14px;padding:8px 12px;background:var(--s);border:1px solid var(--b);border-radius:8px;border-left:3px solid var(--a)}
-</style>
-<style>
-/* SÉLECTEUR LANGUE */
-.lang-bar{display:flex;gap:7px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
-.lang-lbl{font-size:.75rem;color:var(--t2);font-weight:700;white-space:nowrap}
-.lang-btn{background:var(--s2);border:1px solid var(--b);color:var(--t2);font-family:'Nunito',sans-serif;font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:20px;cursor:pointer;transition:all .15s}
-.lang-btn:hover,.lang-btn.active{background:var(--a);color:#0d0f1a;border-color:var(--a)}
-.lang-info{font-size:.75rem;color:var(--t2);margin-bottom:14px;padding:8px 12px;background:var(--s);border:1px solid var(--b);border-radius:8px;border-left:3px solid var(--a)}
-/* BADGE LANGUE dans les cartes */
-.lang-badge{font-size:.6rem;background:var(--a2);color:#fff;padding:1px 5px;border-radius:4px;vertical-align:middle;margin-left:4px}
-.flag-badge{position:absolute;bottom:6px;left:6px;font-size:.9rem;line-height:1}
-</style>
 </head>
 <body>
 
 <header>
   <div class="pokeball"></div>
-  <div class="logo">PokéVault</div>
+  <div class="logo">PokéVault <span class="pro-badge">PRO</span></div>
   <nav>
-    <button class="nb active" id="nav-dashboard" onclick="showView('dashboard')">📊 Dashboard</button>
-    <button class="nb" id="nav-search"    onclick="showView('search')">🔍 Rechercher</button>
-    <button class="nb" id="nav-collection" onclick="showView('collection')">📦 Collection</button>
-    <button class="nb" id="nav-manual"   onclick="showView('manual')">✏️ Ajouter</button>
+    <button class="nb active" id="nav-dashboard"  onclick="showView('dashboard')">📊 Dashboard</button>
+    <button class="nb"        id="nav-search"     onclick="showView('search')">🔍 Rechercher</button>
+    <button class="nb"        id="nav-collection" onclick="showView('collection')">📦 Collection</button>
+    <button class="nb"        id="nav-resale"     onclick="showView('resale')">💰 Revente</button>
+    <button class="nb"        id="nav-manual"     onclick="showView('manual')">✏️ Ajouter</button>
   </nav>
 </header>
 
 <main>
 
+  <!-- ═══ DASHBOARD PRO ═══ -->
   <div id="view-dashboard" class="view active">
+
+    <!-- KPI row -->
     <div class="sg" id="stats-grid"></div>
+
+    <!-- Variation 7j -->
+    <div class="variation-bar" id="variation-bar"></div>
+
+    <!-- Charts -->
     <div class="cs">
-      <div class="cb"><div class="ct">📈 Valeur par extension</div><canvas id="chart-sets" height="220"></canvas></div>
-      <div class="cb"><div class="ct">💎 Répartition par rareté</div><canvas id="chart-rarity" height="220"></canvas></div>
+      <div class="cb">
+        <div class="ct">📈 Évolution valeur totale (7 jours)</div>
+        <canvas id="chart-history" height="200"></canvas>
+      </div>
+      <div class="cb">
+        <div class="ct">💶 Valeur par extension</div>
+        <canvas id="chart-sets" height="200"></canvas>
+      </div>
     </div>
-    <div class="st">⭐ Top cartes précieuses</div>
-    <div class="cg" id="top-cards"></div>
+    <div class="cs">
+      <div class="cb">
+        <div class="ct">💎 Répartition par rareté</div>
+        <canvas id="chart-rarity" height="200"></canvas>
+      </div>
+      <div class="cb">
+        <div class="ct">📊 Statuts Revente</div>
+        <canvas id="chart-status" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Top 5 + Alertes -->
+    <div class="two-col">
+      <div>
+        <div class="st">🔥 Top 5 les plus précieuses</div>
+        <div id="top-cards"></div>
+      </div>
+      <div>
+        <div class="st">⚡ Alertes <span class="alert-badge" id="alert-count">0</span></div>
+        <div id="alerts-list"></div>
+      </div>
+    </div>
   </div>
 
+  <!-- ═══ RECHERCHE ═══ -->
   <div id="view-search" class="view">
     <div class="st">🔍 Rechercher une carte Pokémon</div>
-
     <div class="lang-bar">
-      <span class="lang-lbl">🌍 Langue des cartes :</span>
+      <span class="lang-lbl">🌍 Langue :</span>
       <button class="lang-btn active" id="lang-fr" onclick="setLang('fr')">🇫🇷 Français</button>
-      <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
-      <button class="lang-btn" id="lang-jp" onclick="setLang('jp')">🇯🇵 Japonais</button>
+      <button class="lang-btn"        id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+      <button class="lang-btn"        id="lang-jp" onclick="setLang('jp')">🇯🇵 Japonais</button>
     </div>
     <div class="lang-info" id="lang-info">💶 Cotes Cardmarket Europe (€) — éditions françaises</div>
-
     <div class="sbar">
-      <input id="sinp" class="sinp" placeholder="Ex : Dracaufeu, Pikachu VMAX, Mew..." onkeydown="if(event.key==='Enter')doSearch()">
+      <input id="sinp" class="sinp" placeholder="Ex : Dracaufeu, Pikachu VMAX, Mew…" onkeydown="if(event.key==='Enter')doSearch()">
       <button class="btn" onclick="doSearch()">Rechercher</button>
     </div>
     <div id="results"></div>
   </div>
 
+  <!-- ═══ COLLECTION ═══ -->
   <div id="view-collection" class="view">
     <div class="st">📦 Ma Collection</div>
     <div class="synbar">
       <button class="btn" onclick="exportJSON()">⬇️ Exporter</button>
-      <label class="btn btn2" style="cursor:pointer">⬆️ Importer<input type="file" id="imp" accept=".json" onchange="importJSON(event)" style="display:none"></label>
-      <span class="synh">Sauvegardez ou transférez sur un autre appareil</span>
+      <label class="btn btn2" style="cursor:pointer">⬆️ Importer
+        <input type="file" id="imp" accept=".json" onchange="importJSON(event)" style="display:none">
+      </label>
+      <span class="synh">Sauvegarde locale • Exportez pour transférer</span>
     </div>
     <div class="fb" id="filter-bar"></div>
     <div class="cg" id="coll-grid"></div>
   </div>
 
+  <!-- ═══ REVENTE PRO ═══ -->
+  <div id="view-resale" class="view">
+    <div class="st">💰 Mode Revente — Analyse ROI</div>
+
+    <!-- Résumé revente -->
+    <div class="sg" id="resale-stats"></div>
+
+    <!-- Filtres statut -->
+    <div class="status-bar">
+      <button class="stat-btn active" id="sf-all"   onclick="setResaleFilter('all',this)">Toutes</button>
+      <button class="stat-btn sell"   id="sf-sell"  onclick="setResaleFilter('sell',this)">🔴 SELL</button>
+      <button class="stat-btn hold"   id="sf-hold"  onclick="setResaleFilter('hold',this)">🟡 HOLD</button>
+      <button class="stat-btn watch"  id="sf-watch" onclick="setResaleFilter('watch',this)">🔵 WATCH</button>
+    </div>
+
+    <div id="resale-grid"></div>
+  </div>
+
+  <!-- ═══ AJOUT MANUEL ═══ -->
   <div id="view-manual" class="view">
     <div class="st">✏️ Ajouter manuellement</div>
     <div class="mf">
@@ -104,11 +141,21 @@
         <div class="fg"><label>Quantité</label><input type="number" id="f-qty" min="1" value="1"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Cote (€)</label><input type="number" id="f-value" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><label>Prix achat (€) *</label><input type="number" id="f-buy" min="0" step="0.01" placeholder="0.00"></div>
+        <div class="fg"><label>Cote actuelle (€)</label><input type="number" id="f-value" min="0" step="0.01" placeholder="0.00"></div>
+      </div>
+      <div class="fr">
         <div class="fg"><label>Condition</label>
           <select id="f-cond">
             <option>Mint</option><option selected>Near Mint</option>
             <option>Excellent</option><option>Bon état</option><option>Abîmée</option>
+          </select>
+        </div>
+        <div class="fg"><label>Statut revente</label>
+          <select id="f-status">
+            <option value="watch">🔵 WATCH</option>
+            <option value="hold" selected>🟡 HOLD</option>
+            <option value="sell">🔴 SELL</option>
           </select>
         </div>
       </div>
