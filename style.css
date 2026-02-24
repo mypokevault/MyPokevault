@@ -1,3 +1,128 @@
-body { font-family: 'Nunito', sans-serif; background:#0d0f1a; color:#e8eaf6; margin:0; padding:0; }
-header { background:#161929; padding:15px; text-align:center; }
-h1 { margin:20px 0; }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Arial;
+  background: #0b1020;
+  color: #e6e8f2;
+}
+
+/* Header */
+header {
+  background: linear-gradient(135deg,#1a2145,#0d1230);
+  padding: 20px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* Layout */
+main {
+  padding: 16px;
+  max-width: 900px;
+  margin: auto;
+}
+
+section {
+  margin-bottom: 28px;
+  background: #121834;
+  padding: 16px;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+/* Inputs */
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #0f1430;
+  color: white;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+button {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #2563eb;
+}
+
+/* Collection Cards */
+#coll-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.card-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0f1430;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.card-info {
+  text-align: left;
+}
+
+.card-name {
+  font-weight: 600;
+}
+
+.card-meta {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.card-value {
+  font-weight: bold;
+  color: #22c55e;
+}
+
+.btn-del {
+  background: #ef4444;
+  padding: 6px 10px;
+}
+
+.btn-del:hover {
+  background: #dc2626;
+}
+
+/* Total value */
+.total-box {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+/* Search results */
+#search-results div {
+  background: #0f1430;
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Mobile */
+@media (max-width:600px){
+  header { font-size:22px; }
+}
